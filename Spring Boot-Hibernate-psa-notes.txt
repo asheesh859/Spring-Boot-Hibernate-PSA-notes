@@ -139,4 +139,8 @@ public class EmployeeController {
 
 }
 
+######################################
+Example - Submit data from .jsp file and read that in Controller layer
+###################################
+
 
