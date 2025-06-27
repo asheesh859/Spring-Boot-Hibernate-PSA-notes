@@ -1,4 +1,4 @@
-##############################
+e##############################
 What is Spring boot
 ################################
 
@@ -90,6 +90,53 @@ a. ModelMap is a special object provided by Spring MVC to pass data from your co
 b. It behaves like a Map (key-value pairs)
 
 
+######################################
+Example - Create JSP page inside /src/webapp/WEB-INF/views/ and call that from controller layer 
+###################################
+Step 1:
+----------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+</head>
+<body>
+	<h2>Register here......</h2>
+</body>
+</html>
+registration.jsp
+--------------------------------------------------------------------------------
+Step 2:
+-------
+spring.application.name=app
 
+spring.mvc.view.prefix=/WEB-INF/views/
+spring.mvc.view.suffix=.jsp
+application.properties
+-----------------------------------------------------------------------------------
+Step 3: Add dependency
+-----------
+<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-jasper</artifactId>
+</dependency>
+------------------------------------------------------------------------------------
+Step 4: Developer Controller Layer
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class EmployeeController {
+	
+	@RequestMapping("/view")
+	public String viewRegisterEmp() {
+		return "register";
+	}
+
+}
 
 
