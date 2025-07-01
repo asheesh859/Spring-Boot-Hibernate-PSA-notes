@@ -138,9 +138,179 @@ public class EmployeeController {
 	}
 
 }
-
+Note
+-------------
+Why do we use a Dialect in Spring Boot (Hibernate)?
+The dialect tells Hibernate how to generate SQL optimized for a specific database (like MySQL, PostgreSQL, Oracle, etc.).
+------------------------
 ######################################
 Example - Submit data from .jsp file and read that in Controller layer
 ###################################
 
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+</head>
+<body>
+	<h2>Register here..</h2>
+	<form action="saveReg" method="post">
+		<pre>
+			First Name <input type="text" name="firstName"/>
+			Last Name <input type="text" name="lastName"/>
+			Email Id <input type="text" name="email"/>
+			Mobile <input type="text" name="mobile"/>
+			<input type="submit" value="save"/>
+		</pre>
+	</form>
+${msg}
+</body>
+</html>
+registration.jsp
+-----------------------------------------------------------------------------
 
+package com.app.entity;
+import jakarta.persistence.*;
+
+@Entity
+public class Employee {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	
+	@Column(name = "first_name", nullable = false)
+	private String firstName;
+	
+	@Column(name = "last_name", nullable = false)
+	private String lastName;
+	
+	@Column(name = "email", nullable = false,unique = true)
+	private String email;
+	
+	@Column(name = "mobile", nullable = false, unique = true)
+	private String mobile;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	
+	
+}
+Employee.java ---- Entity Class
+------------------------------------------------------------------
+
+spring.application.name=app
+
+spring.mvc.view.prefix=/WEB-INF/views/
+spring.mvc.view.suffix=.jsp
+
+spring.datasource.url=jdbc:mysql://localhost:3306/appdb
+spring.datasource.username=root
+spring.datasource.password=test
+
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+spring.jpa.hibernate.ddl-auto=update
+
+spring.jpa.show-sql=true
+
+Add application.properties files
+----------------------------------------
+
+package com.app.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.app.entity.Employee;
+
+@Controller
+public class EmployeeController {
+
+	//Handler Methods - http://localhost:8080/view
+	@RequestMapping("/view")
+	public String viewRegisterPage() {
+		return "registration";//--> RequestDispatcher
+	}
+	
+	@RequestMapping("/saveReg")
+	public String getRegistrationData(Employee employee, Model model) {
+		employeeService.saveEmployeeDetails(employee);
+		model.addAttribute("msg", "Record is saved");
+		return "registration";
+	}
+}
+EmployeeController.java
+---------------------------------------------------------
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.app.entity.Employee;
+
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
+}
+Repository Layer
+----------------------------------
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.app.entity.Employee;
+import com.app.repository.EmployeeRepository;
+
+@Service
+public class EmployeeService {
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
+	
+	public void saveEmployeeDetails(Employee employee) {
+		employeeRepository.save(employee);
+	}
+
+}
+EmployeeService.java
+
+_________________________________________
+What is @ModelAttribute in Spring MVC?
+@ModelAttribute is an annotation used in Spring MVC to bind form data or request parameters to Java objects
+_______________________________________
