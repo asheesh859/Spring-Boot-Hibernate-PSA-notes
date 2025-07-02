@@ -314,3 +314,88 @@ _________________________________________
 What is @ModelAttribute in Spring MVC?
 @ModelAttribute is an annotation used in Spring MVC to bind form data or request parameters to Java objects
 _______________________________________
+
+#############################
+Payload / DTO implementation in Spring boot
+############################
+Step 1: Modify registration.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+</head>
+<body>
+	<h2>Register here..</h2>
+	<form action="saveReg" method="post">
+		<pre>
+			First Name <input type="text" name="firstName"/>
+			Last Name <input type="text" name="lastName"/>
+			Email Id <input type="text" name="email"/>
+			Mobile <input type="text" name="mobile"/>
+			City <input type="text" name="city"/>
+			State <input type="text" name="state"/>
+			Pincode <input type="text" name="pinCode"/>
+			Address Line <input type="text" name="addressLine"/>
+			<input type="submit" value="save"/>
+		</pre>
+	</form>
+	${msg}
+</body>
+</html>
+
+Step 2: Modify EmployeeController.java
+@Controller
+public class EmployeeController {
+	
+	@Autowired
+	private EmployeeService employeeService;
+
+	//Handler Methods - http://localhost:8080/view
+	@RequestMapping("/view")
+	public String viewRegisterPage() {
+		return "registration";//--> RequestDispatcher
+	}
+	
+//	@RequestMapping("/saveReg")
+//	public String getRegistrationData(Employee employee, ModelMap model) {
+//		employeeService.saveEmployeeDetails(employee);
+//		model.addAttribute("msg", "Record is saved");
+//		return "registration";
+//	}
+	
+	@RequestMapping("/saveReg")
+	public String getRegistrationData(@ModelAttribute EmployeeDto employeeDto, Model model) {
+		employeeService.saveEmployeeDetails(employeeDto);
+		model.addAttribute("msg", "Record is saved");
+        return "registration";
+	}
+	
+}
+
+Step 3: Modify Service Layer - EmployeeService.java
+--------------------------
+@Service
+public class EmployeeService {
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private AddressRepository addressRepository;
+	
+	public void saveEmployeeDetails(EmployeeDto employeeDto) {
+		Employee emp = new Employee();
+		BeanUtils.copyProperties(employeeDto,emp);//-->Copy Data From Dto to Entity
+		employeeRepository.save(emp);
+		
+		Address address = new Address();
+		BeanUtils.copyProperties(employeeDto,address);//-->Copy Data From Dto to Entity
+		addressRepository.save(address);
+	}
+
+}
+
