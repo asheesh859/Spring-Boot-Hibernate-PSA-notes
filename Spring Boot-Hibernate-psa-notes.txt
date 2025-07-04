@@ -932,7 +932,110 @@ public void deleteRegistrationById(long id) {
 		employeeRepository.deleteById(id);
 	}
 
+###############################
+Update Employee Details
+##############################
+Step 1: Modify list_registrations.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="menu.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Employee</title>
+</head>
+<body>
+	<h2>View Registrations</h2>
+	
+	<table>
+		<tr>
+			<th>
+				First name
+			</th>
+			<th>
+				Last name
+			</th>
+			<th>
+				Email
+			</th>
+			<th>
+				Mobile
+			</th>
+			<th>
+				Delete
+			</th>
+		</tr>
+		
+		<c:forEach var="emp" items="${employees}">
+		<tr>
+			<td>
+				${emp.firstName}
+			</td>
+			<td>
+				${emp.lastName}
+			</td>
+			<td>
+				${emp.email}
+			</td>
+			<td>
+				${emp.mobile}
+			</td>
+			<td>
+				<a href="deleteRegistration?id=${emp.id}">delete</a>
+			</td>
+			<td>
+				<a href="getRegistrationById?id=${emp.id}">update</a>
+			</td>
+		</tr>
+		
+		</c:forEach>
+		
+	
+	</table>
+	
+</body>
+</html>
 
+Step 2: Modify EmployeeController.java
+
+			@RequestMapping("/getRegistrationById")
+			public String getRegistrationById(@RequestParam long id, ModelMap model) {
+				Employee employee = employeeService.getRegistrationById(id);
+				model.addAttribute("employee",employee);
+				return "update_registration";//--> RequestDispatcher
+			}
+Step 3: Modify Service layer - EmployeeService.java
+public Employee getRegistrationById(long id) {
+		Optional<Employee> opEmp = employeeRepository.findById(id);
+		return opEmp.get();
+	}
+Step 4: Create update_registration.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="menu.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+</head>
+<body>
+	<h2>Register here..</h2>
+	<form action="updateReg" method="post">
+		<pre>
+		    <input type="hidden" name="id" value="${employee.id}"/>
+			First Name <input type="text" name="firstName" value="${employee.firstName}"/>
+			Last Name <input type="text" name="lastName" value="${employee.lastName}"/>
+			Email Id <input type="text" name="email" value="${employee.email}"/>
+			Mobile <input type="text" name="mobile" value="${employee.mobile}"/>
+			<input type="submit" value="update"/>
+		</pre>
+	</form>
+	${msg}
+</body>
+</html>
 
 
 
