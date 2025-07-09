@@ -1145,6 +1145,55 @@ public class EmailSender {
 	}
 }
 
+What are web service/ API / Restful service?
+
+1. Integration-Friendly
+→ Helps integrate heterogeneous (different tech stacks) or homogeneous (same stack) applications seamlessly.
+
+2. Accelerates Development
+→ Reduces development time by enabling third-party integrations (e.g., payment gateways, social logins, SMS/email services).
+
+3. Cross-Platform Scalability
+→ Easily supports multiple front-end clients like Android, iOS, Web browsers, or even IoT devices via standard HTTP/JSON communication.
+
+What is JSON (Javascript Object Notation)?
+##########################################
+-> Format: Key-Value pairs
+-> Language-independent (used with Java, Python, JS, etc.)
+-> Supports:
+a. Strings
+b. Numbers
+c. Booleans
+d. Arrays
+e. Objects
+f. null
+
+Example 
+##########
+
+{
+  "name": "John",
+  "age": 30,
+  "isEmployee": true,
+  "skills": ["Java", "Spring Boot", "REST"],
+  "address": {
+    "city": "Bangalore",
+    "pincode": 560001
+  }
+}
+
+Types of web services
+#####################
+1. SOAP web services
+-> Simple Object Access Protocol
+-> Will exchange data between applications using XML
+-> Difficult to implement
+
+2. Restful webservices
+-> Data exchange between application will be done using JSON (We can also use xml)
+-> Easy to implement
+
+Note: Spring boot makes restful webservice implementation easy
 
 
 
