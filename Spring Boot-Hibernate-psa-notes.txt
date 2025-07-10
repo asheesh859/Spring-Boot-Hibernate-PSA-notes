@@ -1195,6 +1195,119 @@ Types of web services
 
 Note: Spring boot makes restful webservice implementation easy
 
+#############################
+Example to Create Employee Record using Rest api
+#############################
+
+Step 1: Create APIResponse dto, to send response in standard format
+
+public class APIResponse<T> {
+
+	private String message;
+	private int status;
+	private T data;
+	
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public T getData() {
+		return data;
+	}
+	public void setData(T data) {
+		this.data = data;
+	}
+	
+}
+
+Step 2: Create EmployeeControllerAPI class
+
+package com.app.api;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.app.dto.APIResponse;
+import com.app.dto.EmployeeDto;
+import com.app.service.EmployeeService;
+
+@RestController
+@RequestMapping("/api/v1/employee")
+public class EmployeeControllerAPI {
+	// http://localhost:8080/api/v1/employee/add
+	
+	@Autowired
+	private EmployeeService employeeService;
+	
+	@PostMapping("/add")
+	public ResponseEntity<APIResponse<EmployeeDto>> createEmployeeRegistration(@RequestBody EmployeeDto employeeDto) {
+		EmployeeDto dto = employeeService.saveEmployeeDetails(employeeDto);
+		
+		APIResponse<EmployeeDto> response = new APIResponse<>();
+		response.setMessage("Employee Registered");
+		response.setStatus(201);
+		response.setData(dto);
+		
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+}
+
+Step 3: Create EmployeeService.java
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private AddressRepository addressRepository;
+	
+	public EmployeeDto saveEmployeeDetails(EmployeeDto employeeDto) {
+		Employee emp = new Employee();
+		BeanUtils.copyProperties(employeeDto,emp);
+		Employee employeeSaved = employeeRepository.save(emp);
+		
+		Address address = new Address();
+		BeanUtils.copyProperties(employeeDto,address);
+		Address addredSaved = addressRepository.save(address);
+		
+		EmployeeDto dto = new EmployeeDto();
+		BeanUtils.copyProperties(employeeSaved, dto);
+		BeanUtils.copyProperties(addredSaved, dto);
+		
+		return dto;
+	}
+
+
+
+
+
+###################
+Definitions
+###############
+a. ResponseEntity helps us send both the required HTTP status code and response data (usually in JSON format).
+b. @RequestBody is an annotation in Spring used to bind the HTTP request body (usually in JSON format) to a Java object.
+c. @RestController It is used to create RESTful web services that return data in JSON format
+d. @PostMapping is a Spring MVC annotation used to handle HTTP POST requests.
+It is typically used when you want to submit or create new data, such as inserting a record into the database.
+e. Status Code: 201 Created is an HTTP response status code indicating that a resource has been successfully created as a result of a POST request.
+
+
+
+
+
+
 
 
 
