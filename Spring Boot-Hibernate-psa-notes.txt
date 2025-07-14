@@ -1303,6 +1303,98 @@ d. @PostMapping is a Spring MVC annotation used to handle HTTP POST requests.
 It is typically used when you want to submit or create new data, such as inserting a record into the database.
 e. Status Code: 201 Created is an HTTP response status code indicating that a resource has been successfully created as a result of a POST request.
 
+##########################
+Delete API - Delete Employee by Id
+#########################
+
+Step 1:  http://localhost:8080/api/v1/employee/delete?id=4
+Use above url with delete option in postman
+
+Step 2: Create a method in EmployeeController.java
+
+// http://localhost:8080/api/v1/employee/delete?id=3
+	@DeleteMapping("/delete")
+	public ResponseEntity<APIResponse<String>> deleteEmployeeById(
+			@RequestParam long id
+			){
+		employeeService.deleteEmployeeById(id);
+		APIResponse<String> response = new APIResponse<>();
+		response.setMessage("Delete....");
+		response.setStatus(200);
+		response.setData("Emplyee is deleted");
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+Step 4: Create Following method inside EmployeeService.java
+
+public void deleteEmployeeById(long id) {
+		employeeRepository.deleteById(id);
+	}
+
+#####################
+Fetch all employees from database using API
+###################
+Step 1: http://localhost:8080/api/v1/employee
+Use this url in postman with get option
+
+Step 2:EmployeeCOntroller.java create following method
+
+@GetMapping
+	public ResponseEntity<APIResponse<List<Employee>>> fetchAllRegistrations(){
+		List<Employee> employees = employeeService.getRegistrations();
+		APIResponse<List<Employee>> response = new APIResponse<>();
+		response.setMessage("Delete....");
+		response.setStatus(200);
+		response.setData(employees);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+Step 3: Create following method inside EmployeeService.java
+
+public List<Employee> getRegistrations() {
+		List<Employee> employees = employeeRepository.findAll();
+		return employees;
+		
+	}
+
+#########################################
+Udpdate Employee API
+################################
+
+Step 1: http://localhost:8080/api/v1/employee
+Use the above url with thew JSON mentioned below:
+{
+    "id":1,
+    "firstName":"stallin",
+    "lastName":"a",
+    "email":"abc@gmail.com",
+    "mobile":"9631215511"
+}
+
+Step 2: Create following method in EmployeeController.java
+@PutMapping
+	public ResponseEntity<APIResponse<String>> UpdateRegistrations(
+				@RequestBody EmployeeDto dto
+			){
+		employeeService.updateRegistrationById(dto);
+		
+		APIResponse<String> response = new APIResponse<>();
+		response.setMessage("Updated....");
+		response.setStatus(200);
+		response.setData("Employee Record is udpdated");
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+Step 3: Create following method inside EmployeeService.java
+public void updateRegistrationById(EmployeeDto employeeDto) {
+		Employee emp = new Employee();
+		BeanUtils.copyProperties(employeeDto, emp);
+		employeeRepository.save(emp);
+	}
+
+
 
 
 
