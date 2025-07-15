@@ -1394,12 +1394,87 @@ public void updateRegistrationById(EmployeeDto employeeDto) {
 		employeeRepository.save(emp);
 	}
 
+####################################
+Pagination & Sorting in Spring boot - JPARepository
+###################################
 
 
+Pagination
+---------
 
+Step 1: Use the mentioned url in postman with option get
 
+//http://localhost:8080/api/v1/employee?pageSize=3
 
+Step 2: Create following method inside EmployeeControllerAPI class
+	@GetMapping
+	public ResponseEntity<APIResponse<List<Employee>>> fetchAllRegistrations(
+				@RequestParam(value = "pageNo",  defaultValue = "0", required = false) int pageNo,
+				@RequestParam(value = "pageSize",  defaultValue = "5", required = false) int pageSize
+			
+			){
+		List<Employee> employees = employeeService.getRegistrations(pageNo,pageSize);
+		APIResponse<List<Employee>> response = new APIResponse<>();
+		response.setMessage("Employee Records");
+		response.setStatus(200);
+		response.setData(employees);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
 
+Step 3: Create a method inside EmployeeService.java
+	
+	public List<Employee> getRegistrations(int pageNo, int pageSize) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		Page<Employee> page = employeeRepository.findAll(pageable);
+		List<Employee> employees = page.getContent();
+		return employees;
+		
+	}
+
+#######################
+Sorting 
+###################
+Step 1: Use the mentioned url in postman with option get
+http://localhost:8080/api/v1/employee?pageNo=0&pageSize=5&sortBy=email&sortDir=desc
+
+Step 2: Create a method inside EmployeeControllerApi class
+@GetMapping
+	public ResponseEntity<APIResponse<List<Employee>>> fetchAllRegistrations(
+				@RequestParam(value = "pageNo",  defaultValue = "0", required = false) int pageNo,
+				@RequestParam(value = "pageSize",  defaultValue = "5", required = false) int pageSize,
+				@RequestParam(value = "sortBy",  defaultValue = "id", required = false) String sortBy,
+				@RequestParam(value = "sortDir",  defaultValue = "asc", required = false) String sortDir
+			){
+		List<Employee> employees = employeeService.getRegistrations(pageNo,pageSize,sortBy,sortDir);
+		APIResponse<List<Employee>> response = new APIResponse<>();
+		response.setMessage("Employee Records");
+		response.setStatus(200);
+		response.setData(employees);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+Step 3: Create a method inside EmployeeService.java class
+public List<Employee> getRegistrations(int pageNo, int pageSize, String sortBy, String sortDir) {
+		Sort sort = null;
+
+//Sort sort = null;
+//		sort = sortDir.equalsIgnoreCase("asc")?Sort.by(Direction.ASC,sortBy):Sort.by(Direction.DESC,sortBy);
+			
+		if(sortDir.equalsIgnoreCase("asc")) {
+			sort = Sort.by(Direction.ASC, sortBy);
+		}else {
+			sort = Sort.by(Direction.DESC, sortBy);
+		}
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize,sort);
+		Page<Employee> page = employeeRepository.findAll(pageable);
+		List<Employee> employees = page.getContent();
+		return employees;
+		
+	}
 
 
 
