@@ -1647,6 +1647,81 @@ JSON Sample:
   "appointmentDate": "2025-03-01"
 }
 
+###############################
+Exception handling in Spring boot
+############################
+
+Step 1:  Create a method inside EmployeeControllerAPI
+
+@GetMapping("/getReg")
+	public ResponseEntity<APIResponse<Employee>> getRegById(
+			@RequestParam long id
+			) {
+		Employee employee = employeeService.getRegistrationById(id);
+		APIResponse<Employee> response = new APIResponse<>();
+		response.setMessage("Employee Details");
+		response.setStatus(200);
+		response.setData(employee);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		
+	}
+
+Step 2: Create an Exception class ResourceNotFound
+package com.app.exception;
+
+public class ResourceNotFound extends RuntimeException {
+	
+	public ResourceNotFound(String msg) {
+		super(msg);
+	}
+}
+
+Step 3: Create GlobalExceptionHandler.java class (Use @ControllerAdvice)
+
+package com.app.exception;
+
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
+import com.app.dto.ErrorDetails;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+	
+	
+	
+	//Exception Handler Method acts like catch block
+	
+	@ExceptionHandler(ResourceNotFound.class)
+	public ResponseEntity<ErrorDetails> handleResourceNotFound(
+			ResourceNotFound r,
+			WebRequest request
+			){
+		
+		ErrorDetails errorDetails = new ErrorDetails(r.getMessage(), new Date(), request.getDescription(false));
+		return  new ResponseEntity<>(errorDetails,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+
+}
+
+Step 4: Update service layer EmployeeService.java
+public Employee getRegistrationById(long id) {
+		
+		Employee employee = employeeRepository.findById(id).orElseThrow(
+				  ()->new ResourceNotFound("Employee does not exist")
+				);
+		return employee;
+	}
+
+Step 5: Perform testing in postman
+url - http://localhost:8080/api/v1/employee/getReg?id=100
 
 
 
